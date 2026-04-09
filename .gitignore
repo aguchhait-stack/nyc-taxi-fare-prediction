@@ -1,5 +1,7 @@
-data/
-.ipynb_checkpoints/
 .DS_Store
 .env
+.ipynb_checkpoints/
+.Rhistory
+data.nosync/
+data/
 venv/
