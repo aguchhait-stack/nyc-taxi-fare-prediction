@@ -311,11 +311,17 @@ max         1651.553433       208.000000  </code></pre>
 <div id="6d4f0097-8d5d-4bb8-bbf2-42fddd52d302" class="cell" data-execution_count="5">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>train_clean <span class="op">=</span>train[train[<span class="st">"fare_amount"</span>]<span class="op">&gt;=</span><span class="dv">0</span>]</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>train_clean[<span class="st">"pickup_datetime"</span>]<span class="op">=</span>pd.to_datetime(train_clean[<span class="st">"pickup_datetime"</span>],errors<span class="op">=</span><span class="st">"coerce"</span>)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>train_clean[<span class="st">"year"</span>]<span class="op">=</span>train_clean[<span class="st">"pickup_datetime"</span>].dt.year</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>train_clean[<span class="st">"month"</span>]<span class="op">=</span>train_clean[<span class="st">"pickup_datetime"</span>].dt.month</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- Removing negative 38 rows ---</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>train_clean <span class="op">=</span>train[train[<span class="st">"fare_amount"</span>]<span class="op">&gt;=</span><span class="dv">0</span>]</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>train_clean[<span class="st">"pickup_datetime"</span>]<span class="op">=</span>pd.to_datetime(train_clean[<span class="st">"pickup_datetime"</span>],errors<span class="op">=</span><span class="st">"coerce"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>train_clean[<span class="st">"year"</span>]<span class="op">=</span>train_clean[<span class="st">"pickup_datetime"</span>].dt.year</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>train_clean[<span class="st">"month"</span>]<span class="op">=</span>train_clean[<span class="st">"pickup_datetime"</span>].dt.month</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>train_clean[<span class="st">"hour"</span>]<span class="op">=</span>train_clean[<span class="st">"pickup_datetime"</span>].dt.hour</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
+<div class="cell-output cell-output-stdout">
+<pre><code>--- Removing negative 38 rows ---
+</code></pre>
+</div>
 </div>
 </section>
 </section>
@@ -324,9 +330,9 @@ max         1651.553433       208.000000  </code></pre>
 <div id="4a54f521-f8df-4720-a7b9-319e5a4e87d6" class="cell" data-execution_count="6">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>sns.relplot(x<span class="op">=</span><span class="st">"year"</span>,y<span class="op">=</span><span class="st">"fare_amount"</span>,data<span class="op">=</span>train_clean,kind<span class="op">=</span><span class="st">"line"</span>,errorbar<span class="op">=</span><span class="va">None</span>)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Mean trand of fare from 2009:2015"</span>)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>sns.relplot(x<span class="op">=</span><span class="st">"year"</span>,y<span class="op">=</span><span class="st">"fare_amount"</span>,data<span class="op">=</span>train_clean,kind<span class="op">=</span><span class="st">"line"</span>,errorbar<span class="op">=</span><span class="va">None</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Rise of fare from 2009 to 2015"</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
@@ -336,17 +342,63 @@ max         1651.553433       208.000000  </code></pre>
 </div>
 </div>
 </div>
-<div id="7ac903ea-939e-42c7-bbcb-1f377179f014" class="cell" data-execution_count="7">
+<div id="5d25e309-0458-4f97-a9c3-6d640bda41d3" class="cell" data-execution_count="7">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>sns.catplot(y<span class="op">=</span><span class="st">"fare_amount"</span>,data<span class="op">=</span>train_clean,kind<span class="op">=</span><span class="st">"box"</span>)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Trand of fare from 2009:2015"</span>)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>sns.lineplot(x<span class="op">=</span><span class="st">"hour"</span>,y<span class="op">=</span><span class="st">"fare_amount"</span>,data<span class="op">=</span>train_clean,errorbar<span class="op">=</span><span class="va">None</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Hourly trend of fare"</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
 <p><img src="nyc-taxi-fare-prediction_files/figure-html/cell-8-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="68e9f21a-03b7-40af-baeb-684df98900d6" class="cell" data-execution_count="8">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>train_clean[<span class="st">"passenger_count"</span>].value_counts().plot(kind<span class="op">=</span><span class="st">"bar"</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Passengers per Ride"</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="nyc-taxi-fare-prediction_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="5efc0883-43a5-4f06-86d8-e6e31216cb68" class="cell" data-execution_count="9">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Number of rows with either 0 and one instance of 208 passengers are : </span><span class="op">\</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="sc">{</span><span class="bu">len</span>(train_clean[train_clean[<span class="st">'passenger_count'</span>].isin([<span class="dv">208</span>,<span class="dv">0</span>])])<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- Removing thses outliers ---</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>train_clean<span class="op">=</span>train_clean[<span class="op">~</span>train_clean[<span class="st">"passenger_count"</span>].isin([<span class="dv">208</span>,<span class="dv">0</span>])]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Number of rows with either 0 and one instance of 208 passengers are : 3566
+
+--- Removing thses outliers ---
+</code></pre>
+</div>
+</div>
+<div id="7ac903ea-939e-42c7-bbcb-1f377179f014" class="cell" data-execution_count="10">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>sns.catplot(y<span class="op">=</span><span class="st">"fare_amount"</span>,data<span class="op">=</span>train_clean,kind<span class="op">=</span><span class="st">"box"</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Distribution of fare"</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="nyc-taxi-fare-prediction_files/figure-html/cell-11-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
