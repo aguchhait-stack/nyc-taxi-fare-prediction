@@ -133,11 +133,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>sns.set_theme(palette<span class="op">=</span><span class="st">"viridis"</span>,rc<span class="op">=</span>{<span class="st">"figure.figsize"</span>: (<span class="dv">8</span>, <span class="dv">5</span>)})</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>train <span class="op">=</span> pd.read_csv(<span class="st">'data.nosync/train.csv'</span>, nrows<span class="op">=</span><span class="dv">1000000</span>)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>train.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> roc_auc_score,f1_score,mean_squared_error</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> xgboost <span class="im">as</span> xgb</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> mean_squared_error</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>sns.set_theme(palette<span class="op">=</span><span class="st">"viridis"</span>,rc<span class="op">=</span>{<span class="st">"figure.figsize"</span>: (<span class="dv">8</span>, <span class="dv">5</span>)},style<span class="op">=</span><span class="st">"darkgrid"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="1">
+</div>
+<div id="63680a18-0893-42f3-8122-304ea1fe8ddf" class="cell" data-execution_count="2">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>train <span class="op">=</span> pd.read_csv(<span class="st">'data.nosync/train.csv'</span>, nrows<span class="op">=</span><span class="dv">1000000</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>test <span class="op">=</span> pd.read_csv(<span class="st">'data.nosync/test.csv'</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>train.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
 
@@ -220,15 +231,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="data-cleaning-feature-engineering" class="level2">
 <h2 class="anchored" data-anchor-id="data-cleaning-feature-engineering">Data Cleaning &amp; Feature Engineering</h2>
-<div id="da6e723a-a494-43d1-89e5-aba90f79ce48" class="cell" data-execution_count="2">
+<div id="da6e723a-a494-43d1-89e5-aba90f79ce48" class="cell" data-execution_count="3">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- Missing Values Per Column ---"</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(train.isna().<span class="bu">sum</span>())</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- Data Types ---"</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(train.dtypes)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- Missing Values Per Column ---"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(train.isna().<span class="bu">sum</span>())</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- Data Types ---"</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(train.dtypes)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>--- Missing Values Per Column ---
@@ -253,11 +264,11 @@ passenger_count        int64
 dtype: object</code></pre>
 </div>
 </div>
-<div id="137f62f5-849f-460f-a50b-cec4e9a6f2fd" class="cell" data-execution_count="3">
+<div id="137f62f5-849f-460f-a50b-cec4e9a6f2fd" class="cell" data-execution_count="4">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- Descriptive Summary ---"</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(train.describe())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- Descriptive Summary ---"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(train.describe())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>--- Descriptive Summary ---
@@ -282,20 +293,20 @@ min        -3114.338567         0.000000
 max         1651.553433       208.000000  </code></pre>
 </div>
 </div>
-<div id="d06f74cb-54fb-4e18-b7c9-d9d8984a7c2e" class="cell" data-execution_count="4">
+<div id="d06f74cb-54fb-4e18-b7c9-d9d8984a7c2e" class="cell" data-execution_count="5">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>upper_limit <span class="op">=</span> train[<span class="st">"fare_amount"</span>].quantile(<span class="fl">0.75</span>)<span class="op">+</span><span class="fl">1.5</span><span class="op">*</span>stats.iqr(train[<span class="st">"fare_amount"</span>])</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>lower_limit <span class="op">=</span> train[<span class="st">"fare_amount"</span>].quantile(<span class="fl">0.25</span>)<span class="op">-</span><span class="fl">1.5</span><span class="op">*</span>stats.iqr(train[<span class="st">"fare_amount"</span>])</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>outliers <span class="op">=</span> (train[<span class="st">"fare_amount"</span>]<span class="op">&lt;=</span>lower_limit) <span class="op">&amp;</span> (train[<span class="st">"fare_amount"</span>]<span class="op">&gt;=</span>upper_limit)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"""</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ss">----  Fare  Amount Analysis  ----</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="ss">    Upper limit: </span><span class="sc">{</span>upper_limit<span class="sc">}</span><span class="ss">,</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="ss">    Lower limit: </span><span class="sc">{</span>lower_limit<span class="sc">}</span><span class="ss">,</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="ss">    Outliers percentage: </span><span class="sc">{</span><span class="bu">len</span>(train[outliers])<span class="op">*</span><span class="fl">100.00</span><span class="op">/</span><span class="bu">len</span>(train)<span class="sc">}</span><span class="ss">,</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="ss">    Negative price in : </span><span class="sc">{</span><span class="bu">len</span>(train[train[<span class="st">"fare_amount"</span>]<span class="op">&lt;</span><span class="dv">0</span>])<span class="sc">}</span><span class="ss"> Rows</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="ss">    """</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>upper_limit <span class="op">=</span> train[<span class="st">"fare_amount"</span>].quantile(<span class="fl">0.75</span>)<span class="op">+</span><span class="fl">1.5</span><span class="op">*</span>stats.iqr(train[<span class="st">"fare_amount"</span>])</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>lower_limit <span class="op">=</span> train[<span class="st">"fare_amount"</span>].quantile(<span class="fl">0.25</span>)<span class="op">-</span><span class="fl">1.5</span><span class="op">*</span>stats.iqr(train[<span class="st">"fare_amount"</span>])</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>outliers <span class="op">=</span> (train[<span class="st">"fare_amount"</span>]<span class="op">&lt;=</span>lower_limit) <span class="op">&amp;</span> (train[<span class="st">"fare_amount"</span>]<span class="op">&gt;=</span>upper_limit)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"""</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ss">----  Fare  Amount Analysis  ----</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="ss">    Upper limit: </span><span class="sc">{</span>upper_limit<span class="sc">}</span><span class="ss">,</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="ss">    Lower limit: </span><span class="sc">{</span>lower_limit<span class="sc">}</span><span class="ss">,</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="ss">    Outliers percentage: </span><span class="sc">{</span><span class="bu">len</span>(train[outliers])<span class="op">*</span><span class="fl">100.00</span><span class="op">/</span><span class="bu">len</span>(train)<span class="sc">}</span><span class="ss">,</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="ss">    Negative price in : </span><span class="sc">{</span><span class="bu">len</span>(train[train[<span class="st">"fare_amount"</span>]<span class="op">&lt;</span><span class="dv">0</span>])<span class="sc">}</span><span class="ss"> Rows</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="ss">    """</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -308,15 +319,15 @@ max         1651.553433       208.000000  </code></pre>
     </code></pre>
 </div>
 </div>
-<div id="6d4f0097-8d5d-4bb8-bbf2-42fddd52d302" class="cell" data-execution_count="5">
+<div id="6d4f0097-8d5d-4bb8-bbf2-42fddd52d302" class="cell" data-execution_count="6">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- Removing negative 38 rows ---</span><span class="ch">\n</span><span class="st">"</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>train_clean <span class="op">=</span>train[train[<span class="st">"fare_amount"</span>]<span class="op">&gt;=</span><span class="dv">0</span>]</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>train_clean[<span class="st">"pickup_datetime"</span>]<span class="op">=</span>pd.to_datetime(train_clean[<span class="st">"pickup_datetime"</span>],errors<span class="op">=</span><span class="st">"coerce"</span>)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>train_clean[<span class="st">"year"</span>]<span class="op">=</span>train_clean[<span class="st">"pickup_datetime"</span>].dt.year</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>train_clean[<span class="st">"month"</span>]<span class="op">=</span>train_clean[<span class="st">"pickup_datetime"</span>].dt.month</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>train_clean[<span class="st">"hour"</span>]<span class="op">=</span>train_clean[<span class="st">"pickup_datetime"</span>].dt.hour</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- Removing negative 38 rows ---</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>train_clean <span class="op">=</span>train[train[<span class="st">"fare_amount"</span>]<span class="op">&gt;=</span><span class="dv">0</span>]</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>train_clean[<span class="st">"pickup_datetime"</span>]<span class="op">=</span>pd.to_datetime(train_clean[<span class="st">"pickup_datetime"</span>],errors<span class="op">=</span><span class="st">"coerce"</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>train_clean[<span class="st">"year"</span>]<span class="op">=</span>train_clean[<span class="st">"pickup_datetime"</span>].dt.year</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>train_clean[<span class="st">"month"</span>]<span class="op">=</span>train_clean[<span class="st">"pickup_datetime"</span>].dt.month</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>train_clean[<span class="st">"hour"</span>]<span class="op">=</span>train_clean[<span class="st">"pickup_datetime"</span>].dt.hour</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>--- Removing negative 38 rows ---
@@ -327,26 +338,11 @@ max         1651.553433       208.000000  </code></pre>
 </section>
 <section id="exploratory-data-analysis-eda" class="level1">
 <h1>Exploratory Data Analysis (EDA)</h1>
-<div id="4a54f521-f8df-4720-a7b9-319e5a4e87d6" class="cell" data-execution_count="6">
+<div id="4a54f521-f8df-4720-a7b9-319e5a4e87d6" class="cell" data-execution_count="7">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>sns.relplot(x<span class="op">=</span><span class="st">"year"</span>,y<span class="op">=</span><span class="st">"fare_amount"</span>,data<span class="op">=</span>train_clean,kind<span class="op">=</span><span class="st">"line"</span>,errorbar<span class="op">=</span><span class="va">None</span>)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Rise of fare from 2009 to 2015"</span>)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="nyc-taxi-fare-prediction_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<div id="5d25e309-0458-4f97-a9c3-6d640bda41d3" class="cell" data-execution_count="7">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>sns.lineplot(x<span class="op">=</span><span class="st">"hour"</span>,y<span class="op">=</span><span class="st">"fare_amount"</span>,data<span class="op">=</span>train_clean,errorbar<span class="op">=</span><span class="va">None</span>)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Hourly trend of fare"</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>sns.relplot(x<span class="op">=</span><span class="st">"year"</span>,y<span class="op">=</span><span class="st">"fare_amount"</span>,data<span class="op">=</span>train_clean,kind<span class="op">=</span><span class="st">"line"</span>,errorbar<span class="op">=</span><span class="va">None</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Rise of fare from 2009 to 2015"</span>)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-display">
@@ -357,12 +353,15 @@ max         1651.553433       208.000000  </code></pre>
 </div>
 </div>
 </div>
-<div id="68e9f21a-03b7-40af-baeb-684df98900d6" class="cell" data-execution_count="8">
+<div id="5d25e309-0458-4f97-a9c3-6d640bda41d3" class="cell" data-execution_count="8">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>train_clean[<span class="st">"passenger_count"</span>].value_counts().plot(kind<span class="op">=</span><span class="st">"bar"</span>)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Passengers per Ride"</span>)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>sns.lineplot(x<span class="op">=</span><span class="st">"hour"</span>,y<span class="op">=</span><span class="st">"fare_amount"</span>,data<span class="op">=</span>train_clean,estimator<span class="op">=</span><span class="st">"median"</span>,marker<span class="op">=</span><span class="st">"o"</span>,errorbar<span class="op">=</span><span class="va">None</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Hour'</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Median fare amount'</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>plt.xticks(<span class="bu">range</span>(<span class="dv">24</span>))</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Fare amount based on time'</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
@@ -372,14 +371,29 @@ max         1651.553433       208.000000  </code></pre>
 </div>
 </div>
 </div>
-<div id="5efc0883-43a5-4f06-86d8-e6e31216cb68" class="cell" data-execution_count="9">
+<div id="68e9f21a-03b7-40af-baeb-684df98900d6" class="cell" data-execution_count="9">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Number of rows with either 0 and one instance of 208 passengers are : </span><span class="op">\</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="sc">{</span><span class="bu">len</span>(train_clean[train_clean[<span class="st">'passenger_count'</span>].isin([<span class="dv">208</span>,<span class="dv">0</span>])])<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- Removing thses outliers ---</span><span class="ch">\n</span><span class="st">"</span>)</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>train_clean<span class="op">=</span>train_clean[<span class="op">~</span>train_clean[<span class="st">"passenger_count"</span>].isin([<span class="dv">208</span>,<span class="dv">0</span>])]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>train_clean[<span class="st">"passenger_count"</span>].value_counts(ascending<span class="op">=</span><span class="va">True</span>).plot(kind<span class="op">=</span><span class="st">"barh"</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Passengers per Ride"</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="nyc-taxi-fare-prediction_files/figure-html/cell-10-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="5efc0883-43a5-4f06-86d8-e6e31216cb68" class="cell" data-execution_count="10">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Number of rows with either 0 and one instance of 208 passengers are : </span><span class="op">\</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="sc">{</span><span class="bu">len</span>(train_clean[train_clean[<span class="st">'passenger_count'</span>].isin([<span class="dv">208</span>,<span class="dv">0</span>])])<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- Removing thses outliers ---</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>train_clean<span class="op">=</span>train_clean[<span class="op">~</span>train_clean[<span class="st">"passenger_count"</span>].isin([<span class="dv">208</span>,<span class="dv">0</span>])]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Number of rows with either 0 and one instance of 208 passengers are : 3566
@@ -388,19 +402,98 @@ max         1651.553433       208.000000  </code></pre>
 </code></pre>
 </div>
 </div>
-<div id="7ac903ea-939e-42c7-bbcb-1f377179f014" class="cell" data-execution_count="10">
+<div id="7ac903ea-939e-42c7-bbcb-1f377179f014" class="cell" data-execution_count="11">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>sns.catplot(y<span class="op">=</span><span class="st">"fare_amount"</span>,data<span class="op">=</span>train_clean,kind<span class="op">=</span><span class="st">"box"</span>)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Distribution of fare"</span>)</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>sns.catplot(y<span class="op">=</span><span class="st">"fare_amount"</span>,data<span class="op">=</span>train_clean,kind<span class="op">=</span><span class="st">"box"</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Distribution of fare"</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="nyc-taxi-fare-prediction_files/figure-html/cell-11-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="nyc-taxi-fare-prediction_files/figure-html/cell-12-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
+</div>
+</div>
+<div id="3a013cc5-28f6-497c-b943-f1079bfcba2c" class="cell" data-execution_count="12">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> haversign_distance(lat1,lat2,lon1,lon2):</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co">    d = 2R · arcsin( √[ sin²((lat₂ - lat₁)/2) + cos(lat₁)·cos(lat₂)·sin²((lon₂ - lon₁)/2) ] )</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co">    6371 is earth radius in Km</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    lat1,lat2,lon1,lon2 <span class="op">=</span> <span class="bu">map</span>(np.radians,[lat1,lat2,lon1,lon2])</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    dlat <span class="op">=</span> lat2<span class="op">-</span>lat1</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    dlon <span class="op">=</span> lon2<span class="op">-</span>lon1</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Haversine formula</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> np.sin(dlat<span class="op">/</span><span class="dv">2</span>)<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> np.cos(lat1) <span class="op">*</span> np.cos(lat2) <span class="op">*</span> np.sin(dlon<span class="op">/</span><span class="dv">2</span>)<span class="op">**</span><span class="dv">2</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.arcsin(np.sqrt(a))</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> c<span class="op">*</span> <span class="dv">6371</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>train_clean[<span class="st">"distance_km"</span>]<span class="op">=</span> haversign_distance(train_clean[<span class="st">'pickup_latitude'</span>],</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>                                               train_clean[<span class="st">'dropoff_latitude'</span>],</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>                                               train_clean[<span class="st">'pickup_longitude'</span>],</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>                                               train_clean[<span class="st">'dropoff_longitude'</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div id="608daefc-2140-4162-8a6d-cdf45c31b43b" class="cell" data-execution_count="13">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(y<span class="op">=</span><span class="st">"distance_km"</span>,x<span class="op">=</span><span class="st">"fare_amount"</span>,data<span class="op">=</span>train_clean)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Fare amount based on the distance'</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>plt.ylim([<span class="dv">0</span>,<span class="dv">50</span>])</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="nyc-taxi-fare-prediction_files/figure-html/cell-14-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="c2db43ce-fe3a-4341-a8c6-fd5f50aa2c87" class="cell" data-execution_count="14">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>feature <span class="op">=</span> train_clean[[<span class="st">"passenger_count"</span>,<span class="st">"year"</span>,<span class="st">"month"</span>,<span class="st">"hour"</span>,<span class="st">"distance_km"</span>]]</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> LinearRegression()</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Spliting cleaned data by 80% train and 20% validation</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>X_train, X_val, y_train, y_val <span class="op">=</span> train_test_split(</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    feature, train_clean[<span class="st">"fare_amount"</span>], test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">42</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Train the model on the smaller training slice</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>model.fit(X_train, y_train)</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Predict on the validation slice</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>val_predictions <span class="op">=</span> model.predict(X_val)</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Calculate RMSE</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>rmse <span class="op">=</span> np.sqrt(mean_squared_error(y_val, val_predictions))</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Local Validation RMSE: </span><span class="sc">{</span>rmse<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a><span class="co"># 5 Now for Kaglle submission </span></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>model.fit(X<span class="op">=</span>feature,y<span class="op">=</span>train_clean[<span class="st">"fare_amount"</span>])</span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>test[<span class="st">'pickup_datetime'</span>] <span class="op">=</span> pd.to_datetime(test[<span class="st">'pickup_datetime'</span>])</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>test[<span class="st">'year'</span>] <span class="op">=</span> test[<span class="st">'pickup_datetime'</span>].dt.year</span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>test[<span class="st">'month'</span>] <span class="op">=</span> test[<span class="st">'pickup_datetime'</span>].dt.month</span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>test[<span class="st">'hour'</span>] <span class="op">=</span> test[<span class="st">'pickup_datetime'</span>].dt.hour</span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>test[<span class="st">"distance_km"</span>]<span class="op">=</span>haversign_distance(test[<span class="st">'pickup_latitude'</span>],</span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>                                               test[<span class="st">'dropoff_latitude'</span>],</span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>                                               test[<span class="st">'pickup_longitude'</span>],</span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>                                               test[<span class="st">'dropoff_longitude'</span>])</span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Select the same columns used during model.fit()</span></span>
+<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a>test_features <span class="op">=</span> test[[<span class="st">"passenger_count"</span>, <span class="st">"year"</span>, <span class="st">"month"</span>, <span class="st">"hour"</span>,<span class="st">"distance_km"</span>]]</span>
+<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a>test[<span class="st">"fare_amount"</span>] <span class="op">=</span> model.predict(test_features)</span>
+<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a>test[[<span class="st">"key"</span>,<span class="st">"fare_amount"</span>]].to_csv(<span class="st">'submission.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Local Validation RMSE: 9.6604471872939</code></pre>
 </div>
 </div>
 </section>
