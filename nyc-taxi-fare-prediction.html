@@ -183,7 +183,7 @@ dtype: int64</code></pre>
 </section>
 <section id="exploratory-data-analysis-eda" class="level1">
 <h1>Exploratory Data Analysis (EDA)</h1>
-<div id="c49fb5ab-ed31-423e-a4e4-4682428ad291" class="cell" data-execution_count="56">
+<div id="c49fb5ab-ed31-423e-a4e4-4682428ad291" class="cell" data-execution_count="4">
 <details open="" class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>sns.boxplot(y<span class="op">=</span><span class="st">"fare_amount"</span>,data<span class="op">=</span>train)</span>
@@ -258,7 +258,7 @@ Name: count, dtype: int64</code></pre>
 <div id="68e9f21a-03b7-40af-baeb-684df98900d6" class="cell" data-execution_count="8">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>(train_clean[<span class="st">"passenger_count"</span>].value_counts(normalize<span class="op">=</span><span class="va">True</span>,ascending<span class="op">=</span><span class="va">True</span>)<span class="op">*</span><span class="dv">100</span>).</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>(train_clean[<span class="st">"passenger_count"</span>].value_counts(normalize<span class="op">=</span><span class="va">True</span>,ascending<span class="op">=</span><span class="va">True</span>)<span class="op">*</span><span class="dv">100</span>).<span class="op">\</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    plot(kind<span class="op">=</span><span class="st">"barh"</span>)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Passengers per Ride"</span>)</span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Percentage (%)"</span>)</span>
@@ -533,11 +533,11 @@ R2 Score: 0.87</code></pre>
 </ul>
 <section id="feature-importance" class="level3">
 <h3 class="anchored" data-anchor-id="feature-importance">Feature Importance</h3>
-<div id="30bfd75d-53bd-40ed-bb41-7385d958a458" class="cell" data-execution_count="64">
+<div id="30bfd75d-53bd-40ed-bb41-7385d958a458" class="cell" data-execution_count="20">
 <details open="" class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>ax<span class="op">=</span>pd.DataFrame({<span class="st">"Feature"</span>:X.columns,<span class="st">"Importance"</span>:xgb_gridcv.<span class="op">\</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    best_estimator_.feature_importances_}).</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    best_estimator_.feature_importances_}).<span class="op">\</span></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    sort_values(by<span class="op">=</span><span class="st">"Importance"</span>,ascending<span class="op">=</span><span class="va">False</span>).plot.barh(<span class="st">"Feature"</span>,<span class="st">"Importance"</span>)</span>
 <span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Feature Importances for NYC Taxi Fare Prediction Model</span><span class="ch">\n</span><span class="st">Model: XGBoost Regressor| RMSE: $3.38 | R²: 0.87"</span>)</span>
 <span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Importance Score"</span>)</span>
@@ -556,15 +556,16 @@ R2 Score: 0.87</code></pre>
 <li>Other temporal features such as time, year and passenger has less importance.</li>
 <li>These concluse that fare is largely determined by spatial and pricing rules than temporal patterns.</li>
 </ul>
-<div id="94d62340-0dfb-4eff-9e57-f67ba1b16bc6" class="cell" data-execution_count="54">
+<div id="94d62340-0dfb-4eff-9e57-f67ba1b16bc6" class="cell" data-execution_count="21">
 <details open="" class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(x<span class="op">=</span>X_test[<span class="st">"distance_km"</span>],y<span class="op">=</span>y_test,label<span class="op">=</span><span class="st">"Actual"</span>,alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(x<span class="op">=</span>X_test[<span class="st">"distance_km"</span>],y<span class="op">=</span>y_pred,label<span class="op">=</span><span class="st">"Predicted"</span>,color<span class="op">=</span><span class="st">"darkred"</span>,alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Distance (km)"</span>)</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Fare Amount ($)"</span>)</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Actual vs Predicted Taxi Fares by Distance"</span>)</span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(x<span class="op">=</span>X_test[<span class="st">"distance_km"</span>],y<span class="op">=</span>y_pred,label<span class="op">=</span><span class="st">"Predicted"</span>,</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>                color<span class="op">=</span><span class="st">"darkred"</span>,alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Distance (km)"</span>)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Fare Amount ($)"</span>)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Actual vs Predicted Taxi Fares by Distance"</span>)</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
@@ -581,7 +582,7 @@ R2 Score: 0.87</code></pre>
 </section>
 <section id="kaggle-submission" class="level2">
 <h2 class="anchored" data-anchor-id="kaggle-submission">Kaggle Submission</h2>
-<div id="c2db43ce-fe3a-4341-a8c6-fd5f50aa2c87" class="cell" data-execution_count="65">
+<div id="c2db43ce-fe3a-4341-a8c6-fd5f50aa2c87" class="cell" data-execution_count="22">
 <details open="" class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Applying same transformation on test except # missing_outliers and # coordinate_outlier that reduce rows</span></span>
