@@ -129,18 +129,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> iqr,norm</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression, ElasticNet, Ridge,Lasso</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> xgboost <span class="im">import</span> XGBRegressor</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> xgboost <span class="im">import</span> XGBRegressor</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression,Ridge</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> root_mean_squared_error,r2_score</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split,KFold, RandomizedSearchCV</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> RobustScaler</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>sns.set_theme(palette<span class="op">=</span><span class="st">"viridis"</span>,rc<span class="op">=</span>{<span class="st">"figure.figsize"</span>: (<span class="dv">8</span>, <span class="dv">5</span>)},style<span class="op">=</span><span class="st">"darkgrid"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>sns.set_theme(palette<span class="op">=</span><span class="st">"colorblind"</span>,rc<span class="op">=</span>{<span class="st">"figure.figsize"</span>: (<span class="dv">8</span>, <span class="dv">5</span>)},style<span class="op">=</span><span class="st">"darkgrid"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <div id="63680a18-0893-42f3-8122-304ea1fe8ddf" class="cell" data-execution_count="2">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Loading only one million train rows for due to local memory limits</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Loading only one million train rows due to local memory limits</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>train <span class="op">=</span> pd.read_csv(<span class="st">'data.nosync/train.csv'</span>, nrows<span class="op">=</span><span class="dv">1000000</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>test <span class="op">=</span> pd.read_csv(<span class="st">'data.nosync/test.csv'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
@@ -152,35 +152,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="137f62f5-849f-460f-a50b-cec4e9a6f2fd" class="cell" data-execution_count="3">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- Descriptive Summary ---"</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(train.describe())</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- Data Types ---"</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(train.dtypes)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- Missing Values ---"</span>)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(train.isna().<span class="bu">sum</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- Data Types ---"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(train.dtypes)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"--- Missing Values ---"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(train.isna().<span class="bu">sum</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>--- Descriptive Summary ---
-          fare_amount  pickup_longitude  pickup_latitude  dropoff_longitude  \
-count  1000000.000000    1000000.000000   1000000.000000      999990.000000   
-mean        11.348079        -72.526640        39.929008         -72.527860   
-std          9.822090         12.057937         7.626154          11.324494   
-min        -44.900000      -3377.680935     -3116.285383       -3383.296608   
-25%          6.000000        -73.992060        40.734965         -73.991385   
-50%          8.500000        -73.981792        40.752695         -73.980135   
-75%         12.500000        -73.967094        40.767154         -73.963654   
-max        500.000000       2522.271325      2621.628430          45.581619   
-
-       dropoff_latitude  passenger_count  
-count     999990.000000   1000000.000000  
-mean          39.919954         1.684924  
-std            8.201418         1.323911  
-min        -3114.338567         0.000000  
-25%           40.734046         1.000000  
-50%           40.753166         1.000000  
-75%           40.768129         2.000000  
-max         1651.553433       208.000000  
---- Data Types ---
+<pre><code>--- Data Types ---
 key                      str
 fare_amount          float64
 pickup_datetime          str
@@ -205,12 +183,12 @@ dtype: int64</code></pre>
 </section>
 <section id="exploratory-data-analysis-eda" class="level1">
 <h1>Exploratory Data Analysis (EDA)</h1>
-<div id="c49fb5ab-ed31-423e-a4e4-4682428ad291" class="cell" data-execution_count="4">
+<div id="c49fb5ab-ed31-423e-a4e4-4682428ad291" class="cell" data-execution_count="56">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>sns.boxplot(x<span class="op">=</span><span class="st">"fare_amount"</span>,data<span class="op">=</span>train)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>sns.boxplot(y<span class="op">=</span><span class="st">"fare_amount"</span>,data<span class="op">=</span>train)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Distribution of Fare Amount"</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>plt.grid(axis<span class="op">=</span><span class="st">"y"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Fare Amount ($)"</span>)</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-display">
@@ -238,25 +216,24 @@ Median: 8.5
 Name: count, dtype: int64</code></pre>
 </div>
 </div>
-<ul>
-<li>Top 1% fare is 52.33 whereas median fare is 8.5.</li>
-<li>To keep balance between extreme outliers and robustness I will keep upper limit to 100 because there are 12375 records between 50 and 100. Also removing negative values.</li>
-</ul>
-<div id="d7c60836-d53b-4c5e-bdc3-4057d43946ec" class="cell" data-execution_count="6">
+<div id="93994e27-fcea-4f59-b2cb-65c00d2607be" class="cell" data-execution_count="6">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> missing_outliers(df):</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 1.Creating a clone for reporducibility</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    df_clean <span class="op">=</span> df.copy()</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 2. Dropping Missing values</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    columns_to_drop <span class="op">=</span> [<span class="st">"dropoff_longitude"</span>,<span class="st">"dropoff_latitude"</span>]</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    df_clean <span class="op">=</span> df_clean.dropna(subset<span class="op">=</span>columns_to_drop)</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 3. Removing negative prices</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    df_clean<span class="op">=</span> df_clean[df_clean[<span class="st">'fare_amount'</span>]<span class="op">&gt;</span><span class="dv">0</span>]</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 4. Removing outliers by quantile method</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    df_clean <span class="op">=</span> df_clean[df_clean[<span class="st">'fare_amount'</span>]<span class="op">&lt;</span><span class="dv">100</span>]</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df_clean.reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>train_clean <span class="op">=</span> missing_outliers(train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Data clening function to apply on training dataset</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> missing_outliers(df):</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 1.Creating a clone for reporducibility</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    df_clean <span class="op">=</span> df.copy()</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 2. Dropping Missing values</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    columns_to_drop <span class="op">=</span> [<span class="st">"dropoff_longitude"</span>,<span class="st">"dropoff_latitude"</span>]</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    df_clean <span class="op">=</span> df_clean.dropna(subset<span class="op">=</span>columns_to_drop)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 3. Removing negative prices</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    df_clean<span class="op">=</span> df_clean[df_clean[<span class="st">'fare_amount'</span>]<span class="op">&gt;</span><span class="dv">0</span>]</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 4. Removing outliers by quantile method</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    df_clean <span class="op">=</span> df_clean[df_clean[<span class="st">'fare_amount'</span>]<span class="op">&lt;</span><span class="dv">100</span>]</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="co">#5. Remoming the extreme passenger count</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    df_clean <span class="op">=</span> df_clean[<span class="op">~</span>df_clean[<span class="st">"passenger_count"</span>].isin([<span class="dv">208</span>,<span class="dv">0</span>])]</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df_clean.reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>train_clean <span class="op">=</span> missing_outliers(train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <div id="456f47c7-25d6-4270-b593-36fe7b9b6991" class="cell" data-execution_count="7">
@@ -264,10 +241,11 @@ Name: count, dtype: int64</code></pre>
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>sns.histplot(x<span class="op">=</span><span class="st">"fare_amount"</span>,bins<span class="op">=</span>np.linspace(<span class="dv">0</span>,<span class="dv">52</span>,<span class="dv">53</span>),stat<span class="op">=</span><span class="st">"density"</span>,data<span class="op">=</span>train_clean)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>x_smooth <span class="op">=</span> np.linspace(<span class="dv">0</span>,<span class="dv">52</span>,<span class="dv">106</span>)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>normal_dist<span class="op">=</span> norm.pdf(x_smooth,train_clean[<span class="st">'fare_amount'</span>].mean(),train_clean[<span class="st">'fare_amount'</span>].std())</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>plt.plot(x_smooth,normal_dist,color<span class="op">=</span><span class="st">"red"</span>)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Distribution of fare amount vs. Normal Curve"</span>)</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>normal_dist<span class="op">=</span> norm.pdf(x_smooth,train_clean[<span class="st">'fare_amount'</span>].mean(),</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                      train_clean[<span class="st">'fare_amount'</span>].std())</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>plt.plot(x_smooth,normal_dist,color<span class="op">=</span><span class="st">"red"</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Distribution of fare amount vs. Normal Curve"</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
@@ -277,16 +255,14 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<ul>
-<li>Distribution of Fare amount shows it is right-skewed with highest frequency in the price range of $6-7.</li>
-</ul>
 <div id="68e9f21a-03b7-40af-baeb-684df98900d6" class="cell" data-execution_count="8">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>(train_clean[<span class="st">"passenger_count"</span>].value_counts(normalize<span class="op">=</span><span class="va">True</span>,ascending<span class="op">=</span><span class="va">True</span>)<span class="op">*</span><span class="dv">100</span>).plot(kind<span class="op">=</span><span class="st">"barh"</span>)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Passengers per Ride"</span>)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Percentage"</span>)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>(train_clean[<span class="st">"passenger_count"</span>].value_counts(normalize<span class="op">=</span><span class="va">True</span>,ascending<span class="op">=</span><span class="va">True</span>)<span class="op">*</span><span class="dv">100</span>).</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    plot(kind<span class="op">=</span><span class="st">"barh"</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Passengers per Ride"</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Percentage (%)"</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
@@ -304,125 +280,160 @@ Name: count, dtype: int64</code></pre>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>train_clean<span class="op">=</span>train_clean[<span class="op">~</span>train_clean[<span class="st">"passenger_count"</span>].isin([<span class="dv">208</span>,<span class="dv">0</span>])]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Number of rows with either 0 and one instance of 208 passengers are : 3556
+<pre><code>Number of rows with either 0 and one instance of 208 passengers are : 0
 </code></pre>
 </div>
 </div>
-<div id="93994e27-fcea-4f59-b2cb-65c00d2607be" class="cell" data-execution_count="10">
+<ul>
+<li>The fare distribution is highly right-skewed due to high-value trips ($200) while the median is much lower (~8.5).</li>
+<li>To keep balance between extreme outliers and robustness, I will keep upper limit to 100 as there are 12375 records between 50 and 100.</li>
+<li>Log transformation (Log1p) will help to stabilize variance, reduce skewness during modelling.</li>
+<li>Invalid values in fare columns are removed (e.g., negative price).</li>
+<li>Invalid passenger counts such as 0 and extreme values (e.g., 208) are also removed as data quality issues.</li>
+</ul>
+<div id="f687c210-c3d1-42ef-9089-5ca8f45aed30" class="cell" data-execution_count="10">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Updating missing_outliers function to remove impossible passenger value</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> missing_outliers(df):</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 1.Creating a clone for reporducibility</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    df_clean <span class="op">=</span> df.copy()</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 2. Dropping Missing values</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    columns_to_drop <span class="op">=</span> [<span class="st">"dropoff_longitude"</span>,<span class="st">"dropoff_latitude"</span>]</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    df_clean <span class="op">=</span> df_clean.dropna(subset<span class="op">=</span>columns_to_drop)</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 3. Removing negative prices</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    df_clean<span class="op">=</span> df_clean[df_clean[<span class="st">'fare_amount'</span>]<span class="op">&gt;</span><span class="dv">0</span>]</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 4. Removing outliers by quantile method</span></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    df_clean <span class="op">=</span> df_clean[df_clean[<span class="st">'fare_amount'</span>]<span class="op">&lt;</span><span class="dv">100</span>]</span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    <span class="co">#5. Remoming the extreme passenger count</span></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    df_clean <span class="op">=</span> df_clean[<span class="op">~</span>df_clean[<span class="st">"passenger_count"</span>].isin([<span class="dv">208</span>,<span class="dv">0</span>])]</span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> train_clean.reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>train_clean <span class="op">=</span> missing_outliers(train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> date_transform(df):</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    df_clean<span class="op">=</span>df.copy()</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    df_clean[<span class="st">"pickup_datetime"</span>]<span class="op">=</span>pd.to_datetime( df_clean[<span class="st">"pickup_datetime"</span>],errors<span class="op">=</span><span class="st">"coerce"</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    df_clean[<span class="st">"hour"</span>]<span class="op">=</span>df_clean[<span class="st">"pickup_datetime"</span>].dt.hour</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    df_clean[<span class="st">"year"</span>]<span class="op">=</span>df_clean[<span class="st">"pickup_datetime"</span>].dt.year</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    df_clean[<span class="st">"day_of_week"</span>]<span class="op">=</span>df_clean[<span class="st">"pickup_datetime"</span>].dt.day_of_week</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df_clean</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>train_clean<span class="op">=</span>date_transform(train_clean)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="f687c210-c3d1-42ef-9089-5ca8f45aed30" class="cell" data-execution_count="11">
+<div id="4a54f521-f8df-4720-a7b9-319e5a4e87d6" class="cell" data-execution_count="11">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> date_transform(df):</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    df_clean<span class="op">=</span>df.copy()</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    df_clean[<span class="st">"pickup_datetime"</span>]<span class="op">=</span>pd.to_datetime( df_clean[<span class="st">"pickup_datetime"</span>],errors<span class="op">=</span><span class="st">"coerce"</span>)</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    df_clean[<span class="st">"hour"</span>]<span class="op">=</span>df_clean[<span class="st">"pickup_datetime"</span>].dt.hour</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    df_clean[<span class="st">"year"</span>]<span class="op">=</span>df_clean[<span class="st">"pickup_datetime"</span>].dt.year</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    df_clean[<span class="st">"day_of_week"</span>]<span class="op">=</span>df_clean[<span class="st">"pickup_datetime"</span>].dt.day_of_week</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df_clean</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>train_clean<span class="op">=</span>date_transform(train_clean)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-</div>
-<div id="4a54f521-f8df-4720-a7b9-319e5a4e87d6" class="cell" data-execution_count="12">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>sns.relplot(x<span class="op">=</span><span class="st">"year"</span>,y<span class="op">=</span><span class="st">"fare_amount"</span>,data<span class="op">=</span>train_clean,kind<span class="op">=</span><span class="st">"line"</span>,marker<span class="op">=</span><span class="st">"o"</span>,errorbar<span class="op">=</span><span class="va">None</span>)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Rise of fare from 2009 to 2015"</span>)</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="nyc-taxi-fare-prediction_files/figure-html/cell-13-output-1.png" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<div id="5d25e309-0458-4f97-a9c3-6d640bda41d3" class="cell" data-execution_count="13">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>sns.lineplot(x<span class="op">=</span><span class="st">"hour"</span>,y<span class="op">=</span><span class="st">"fare_amount"</span>,data<span class="op">=</span>train_clean,estimator<span class="op">=</span><span class="st">"median"</span>,marker<span class="op">=</span><span class="st">"o"</span>,errorbar<span class="op">=</span><span class="va">None</span>)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Hour'</span>)</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Median fare amount'</span>)</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>plt.xticks(<span class="bu">range</span>(<span class="dv">24</span>))</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Fare amount based on time'</span>)</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fig,(ax1,ax2,ax3)<span class="op">=</span>plt.subplots(<span class="dv">1</span>,<span class="dv">3</span>,figsize<span class="op">=</span>(<span class="dv">18</span>, <span class="dv">5</span>))</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>sns.lineplot(x<span class="op">=</span><span class="st">"year"</span>,y<span class="op">=</span><span class="st">"fare_amount"</span>,data<span class="op">=</span>train_clean,marker<span class="op">=</span><span class="st">"o"</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>             estimator<span class="op">=</span><span class="st">"median"</span>,label<span class="op">=</span><span class="st">"median"</span>,errorbar<span class="op">=</span><span class="va">None</span>,ax<span class="op">=</span>ax1)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>sns.lineplot(x<span class="op">=</span><span class="st">"year"</span>,y<span class="op">=</span><span class="st">"fare_amount"</span>,data<span class="op">=</span>train_clean,marker<span class="op">=</span><span class="st">"o"</span>,label<span class="op">=</span><span class="st">"mean"</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>             errorbar<span class="op">=</span><span class="va">None</span>,ax<span class="op">=</span>ax1)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>sns.lineplot(x<span class="op">=</span><span class="st">"day_of_week"</span>,y<span class="op">=</span><span class="st">"fare_amount"</span>,marker<span class="op">=</span><span class="st">"o"</span>,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>             estimator<span class="op">=</span><span class="st">"median"</span>,label<span class="op">=</span><span class="st">"median"</span>,data<span class="op">=</span>train_clean,errorbar<span class="op">=</span><span class="va">None</span>,ax<span class="op">=</span>ax2)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>sns.lineplot(x<span class="op">=</span><span class="st">"day_of_week"</span>,y<span class="op">=</span><span class="st">"fare_amount"</span>,marker<span class="op">=</span><span class="st">"o"</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>             label<span class="op">=</span><span class="st">"mean"</span>,data<span class="op">=</span>train_clean,errorbar<span class="op">=</span><span class="va">None</span>,ax<span class="op">=</span>ax2)</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>sns.lineplot(x<span class="op">=</span><span class="st">"hour"</span>,y<span class="op">=</span><span class="st">"fare_amount"</span>,data<span class="op">=</span>train_clean,</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>             marker<span class="op">=</span><span class="st">"o"</span>,estimator<span class="op">=</span><span class="st">"median"</span>,label<span class="op">=</span><span class="st">"median"</span>,errorbar<span class="op">=</span><span class="va">None</span>,ax<span class="op">=</span>ax3)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>sns.lineplot(x<span class="op">=</span><span class="st">"hour"</span>,y<span class="op">=</span><span class="st">"fare_amount"</span>,data<span class="op">=</span>train_clean,</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>             marker<span class="op">=</span><span class="st">"o"</span>,label<span class="op">=</span><span class="st">"mean"</span>,errorbar<span class="op">=</span><span class="va">None</span>,ax<span class="op">=</span>ax3)</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">"Rise of fare from 2011 to 2015"</span>)</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>ax2.set_title(<span class="st">'Stable pattern accross weekday'</span>)</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>ax3.set_title(<span class="st">'Rise of fare in early morning'</span>)</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">"Fare Amount ($)"</span>)</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>ax2.set_ylabel(<span class="st">"Fare Amount ($)"</span>)</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>ax3.set_ylabel(<span class="st">"Fare Amount ($)"</span>)</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>ax2.set_xlabel(<span class="st">'Week day'</span>)</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>plt.suptitle(<span class="st">"Fare Amount Trends: Yearly, Weekly &amp; Hourly Patterns"</span>)</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="nyc-taxi-fare-prediction_files/figure-html/cell-14-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="nyc-taxi-fare-prediction_files/figure-html/cell-12-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<div id="ab6a1201-7b69-4249-acba-56556102ec52" class="cell" data-execution_count="14">
+<ul>
+<li>Yearly: As both mean and median fares increase over time, confirming a real upward trend from 2001 to 2013.</li>
+<li>Weekly: Median fare is almost flat across weeks with small fluctuation due to outliers.</li>
+<li>Hourly: Mean and median shows a sharp spike in early morning, indicating morning airport bookings.</li>
+</ul>
+<div id="ab6a1201-7b69-4249-acba-56556102ec52" class="cell" data-execution_count="12">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> coordinate_outlier(df):</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> coordinate_outlier(df):</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    df_clean <span class="op">=</span> df.copy()</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    latitude_range <span class="op">=</span> (<span class="fl">40.47</span>, <span class="fl">40.92</span>) <span class="co"># Filtering NYC co-ordiantes only </span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    longitude_range <span class="op">=</span> (<span class="op">-</span><span class="fl">74.27</span>, <span class="op">-</span><span class="fl">73.69</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    co_ordinates_boundary <span class="op">=</span> (df_clean[<span class="st">"pickup_latitude"</span>].between(<span class="op">*</span>latitude_range)<span class="op">&amp;\</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>                          df_clean[<span class="st">'pickup_longitude'</span>].between(<span class="op">*</span>longitude_range))<span class="op">&amp;\</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>                          (df_clean[<span class="st">'dropoff_latitude'</span>].between(<span class="op">*</span>latitude_range)<span class="op">&amp;\</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>                          df_clean[<span class="st">'dropoff_longitude'</span>].between(<span class="op">*</span>longitude_range))</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    df_clean <span class="op">=</span> df_clean[co_ordinates_boundary]</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df_clean.reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>train_clean <span class="op">=</span> coordinate_outlier(train_clean)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div id="c190eb4a-f639-421e-9f4c-6462eabbc6ce" class="cell" data-execution_count="13">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> airportbound(df):</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    df_clean<span class="op">=</span>df.copy()</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    JFK<span class="op">=</span>(df_clean[<span class="st">"pickup_latitude"</span>].between(<span class="fl">40.63</span>, <span class="fl">40.66</span>)<span class="op">&amp;\</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>         df_clean[<span class="st">'pickup_longitude'</span>].between(<span class="op">-</span><span class="fl">73.80</span>, <span class="op">-</span><span class="fl">73.75</span>))<span class="op">|\</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>         (df_clean[<span class="st">'dropoff_latitude'</span>].between(<span class="fl">40.63</span>, <span class="fl">40.66</span>)<span class="op">&amp;\</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>          df_clean[<span class="st">'dropoff_longitude'</span>].between(<span class="op">-</span><span class="fl">73.80</span>, <span class="op">-</span><span class="fl">73.75</span>))</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    EWR <span class="op">=</span> (df_clean[<span class="st">"pickup_latitude"</span>].between(<span class="fl">40.67</span>, <span class="fl">40.71</span>)<span class="op">&amp;\</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>         df_clean[<span class="st">"pickup_longitude"</span>].between(<span class="op">-</span><span class="fl">74.19</span>, <span class="op">-</span><span class="fl">74.15</span>))<span class="op">|\</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>        (df_clean[<span class="st">"dropoff_latitude"</span>].between(<span class="fl">40.67</span>, <span class="fl">40.71</span>)<span class="op">&amp;\</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>         df_clean[<span class="st">"dropoff_longitude"</span>].between(<span class="op">-</span><span class="fl">74.19</span>, <span class="op">-</span><span class="fl">74.15</span>))</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    LGA <span class="op">=</span> (df_clean[<span class="st">"pickup_latitude"</span>].between(<span class="fl">40.76</span>, <span class="fl">40.79</span>)<span class="op">&amp;\</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>         df_clean[<span class="st">"pickup_longitude"</span>].between(<span class="op">-</span><span class="fl">73.89</span>, <span class="op">-</span><span class="fl">73.85</span>))<span class="op">|\</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>        (df_clean[<span class="st">"dropoff_latitude"</span>].between(<span class="fl">40.76</span>, <span class="fl">40.79</span>)<span class="op">&amp;\</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>         df_clean[<span class="st">"dropoff_longitude"</span>].between(<span class="op">-</span><span class="fl">73.89</span>, <span class="op">-</span><span class="fl">73.85</span>))</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>    df_clean[<span class="st">"is_airport"</span>]<span class="op">=</span>(JFK<span class="op">|</span>EWR<span class="op">|</span>LGA).astype(<span class="bu">int</span>)</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df_clean</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>train_clean<span class="op">=</span>airportbound(train_clean)   </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div id="3a013cc5-28f6-497c-b943-f1079bfcba2c" class="cell" data-execution_count="14">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> haversign_distance(df):</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co">        Filtering the langitute between Staten Island to Yonkers</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co">        and longitude between New Jersey to JFK/Queens</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co">       """</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    df_clean <span class="op">=</span> df.copy()</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    latitute_range <span class="op">=</span> (<span class="fl">40.5</span>, <span class="fl">41.0</span>) </span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    longitude_range <span class="op">=</span> (<span class="op">-</span><span class="fl">74.3</span>, <span class="op">-</span><span class="fl">73.7</span>)</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    co_ordinates_boundary <span class="op">=</span> df_clean[<span class="st">"pickup_latitude"</span>].between(<span class="op">*</span>latitute_range)<span class="op">&amp;\</span></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>                          df_clean[<span class="st">'dropoff_latitude'</span>].between(<span class="op">*</span>latitute_range)<span class="op">&amp;\</span></span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>                          df_clean[<span class="st">'pickup_longitude'</span>].between(<span class="op">*</span>longitude_range)<span class="op">&amp;\</span></span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>                          df_clean[<span class="st">'dropoff_longitude'</span>].between(<span class="op">*</span>longitude_range)</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    df_clean <span class="op">=</span> df_clean[co_ordinates_boundary]</span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df_clean.reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>train_clean <span class="op">=</span> coordinate_outlier(train_clean)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co">    d = 2R · arcsin( √[ sin²((lat₂ - lat₁)/2) + cos(lat₁)·cos(lat₂)·sin²(</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co">    (lon₂ - lon₁)/2) ] )</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co">    6371 is earth radius in Km</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    df_clean<span class="op">=</span>df.copy()</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    lat1<span class="op">=</span>np.radians(df_clean[<span class="st">'pickup_latitude'</span>])</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    lat2<span class="op">=</span>np.radians(df_clean[<span class="st">'dropoff_latitude'</span>])</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    lon1<span class="op">=</span>np.radians(df_clean[<span class="st">'pickup_longitude'</span>])</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    lon2<span class="op">=</span>np.radians(df_clean[<span class="st">'dropoff_longitude'</span>])</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    dlat<span class="op">=</span> lat2<span class="op">-</span>lat1</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    dlon<span class="op">=</span> lon2<span class="op">-</span>lon1</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Haversine formula</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    a<span class="op">=</span> np.sin(dlat<span class="op">/</span><span class="dv">2</span>)<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> np.cos(lat1) <span class="op">*</span> np.cos(lat2) <span class="op">*</span> np.sin(dlon<span class="op">/</span><span class="dv">2</span>)<span class="op">**</span><span class="dv">2</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    c<span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.arcsin(np.sqrt(a))</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    R<span class="op">=</span><span class="dv">6371</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>    df_clean[<span class="st">"distance_km"</span>]<span class="op">=</span>c<span class="op">*</span>R</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df_clean</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>train_clean<span class="op">=</span>haversign_distance(train_clean)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="3a013cc5-28f6-497c-b943-f1079bfcba2c" class="cell" data-execution_count="15">
+<div id="0722c10b-ef49-4cb7-9612-83c7bb1aecda" class="cell" data-execution_count="15">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> haversign_distance(df):</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co">    d = 2R · arcsin( √[ sin²((lat₂ - lat₁)/2) + cos(lat₁)·cos(lat₂)·sin²((lon₂ - lon₁)/2) ] )</span></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co">    6371 is earth radius in Km</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    df_clean<span class="op">=</span>df.copy()</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    lat1<span class="op">=</span>np.radians(df_clean[<span class="st">'pickup_latitude'</span>])</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    lat2<span class="op">=</span>np.radians(df_clean[<span class="st">'dropoff_latitude'</span>])</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    lon1<span class="op">=</span>np.radians(df_clean[<span class="st">'pickup_longitude'</span>])</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    lon2<span class="op">=</span>np.radians(df_clean[<span class="st">'dropoff_longitude'</span>])</span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    dlat<span class="op">=</span> lat2<span class="op">-</span>lat1</span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    dlon<span class="op">=</span> lon2<span class="op">-</span>lon1</span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Haversine formula</span></span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    a<span class="op">=</span> np.sin(dlat<span class="op">/</span><span class="dv">2</span>)<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> np.cos(lat1) <span class="op">*</span> np.cos(lat2) <span class="op">*</span> np.sin(dlon<span class="op">/</span><span class="dv">2</span>)<span class="op">**</span><span class="dv">2</span></span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    c<span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.arcsin(np.sqrt(a))</span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>    R<span class="op">=</span><span class="dv">6371</span></span>
-<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>    df_clean[<span class="st">"distance_km"</span>]<span class="op">=</span>c<span class="op">*</span>R</span>
-<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df_clean</span>
-<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>train_clean<span class="op">=</span>haversign_distance(train_clean)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(x<span class="op">=</span><span class="st">"distance_km"</span>,y<span class="op">=</span><span class="st">"fare_amount"</span>,hue<span class="op">=</span><span class="st">"is_airport"</span>,data<span class="op">=</span>train_clean)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Distance (km)"</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Fare Amount ($)"</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Fare Amount vs. Distance: Airport vs Non-Airport Trips"</span>)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="nyc-taxi-fare-prediction_files/figure-html/cell-16-output-1.png" class="img-fluid figure-img"></p>
+</figure>
 </div>
-<div id="cb1fcded-156c-4c58-91fb-6aded0059517" class="cell" data-execution_count="16">
+</div>
+</div>
+<ul>
+<li>Fare increases with distance but the airport trips have higher fares for similar distances, indicating different pricing behavior.</li>
+<li>There are flat-line cluster present near $40-60 range in the airport bound traffic, indicating non-linear relationship between fare and distance.</li>
+<li>Additionally, the fares along the y-axis (near zero distance) indicates a <strong>base fare component</strong>, with more surcharge for airport bound traffic.</li>
+</ul>
+<div id="1b4ab831-52ed-4972-89de-65be37561eee" class="cell" data-execution_count="16">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>sns.regplot(x<span class="op">=</span><span class="st">"distance_km"</span>,y<span class="op">=</span><span class="st">"fare_amount"</span>,scatter_kws<span class="op">=</span>{<span class="st">"alpha"</span>:<span class="fl">0.2</span>,<span class="st">"s"</span>:<span class="dv">6</span>},data<span class="op">=</span>train_clean)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Fare Amount vs. distance in Km"</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>sns.heatmap(train_clean.corr(numeric_only<span class="op">=</span><span class="va">True</span>,method<span class="op">=</span><span class="st">"spearman"</span>),annot<span class="op">=</span><span class="va">True</span>,fmt<span class="op">=</span><span class="st">".2f"</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Spearman Cor-relation"</span>)</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-display">
@@ -434,117 +445,126 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 <ul>
-<li>The regression plot of distance vs fare explained linear model is not suitable for the dataset as there are flat lines near 50-60 fare range.</li>
-<li>Distance is not the only factor for fare as we see near the y axis fare rise while the distance covered is 0. Time and location factors are also need to be considered.</li>
-</ul>
-<div id="1b4ab831-52ed-4972-89de-65be37561eee" class="cell" data-execution_count="17">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>sns.heatmap(train_clean.corr(numeric_only<span class="op">=</span><span class="va">True</span>,method<span class="op">=</span><span class="st">"spearman"</span>),annot<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="nyc-taxi-fare-prediction_files/figure-html/cell-18-output-1.png" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<ul>
-<li>As the data sets has non-linear relation, using spearman co-relations shows Fare has most positive co-relation with distance followed by year, dropoff_longitude, pickup_longitude, day_of_week, passenger_count, day_of_week respectively.</li>
+<li>As the data sets has non-linear relation, using spearman co-relations shows fare has most positive co-relation with distance followed by airport bound or not, year etc.</li>
 </ul>
 <section id="modelling" class="level2">
 <h2 class="anchored" data-anchor-id="modelling">Modelling</h2>
 <section id="base-line-model" class="level3">
 <h3 class="anchored" data-anchor-id="base-line-model">Base-line model</h3>
-<div id="d9202591-e71d-4c48-a3c6-84475c9f4c8d" class="cell" data-execution_count="18">
+<div id="d9202591-e71d-4c48-a3c6-84475c9f4c8d" class="cell" data-execution_count="17">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Feature selection</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>X<span class="op">=</span>train_clean[[<span class="st">"distance_km"</span>,<span class="st">"dropoff_longitude"</span>,<span class="st">"pickup_longitude"</span>,<span class="st">"day_of_week"</span><span class="op">\</span></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>               ,<span class="st">"passenger_count"</span>,<span class="st">"year"</span>,<span class="st">"hour"</span>]]</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Target selection</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>y<span class="op">=</span>train_clean[<span class="st">"fare_amount"</span>]</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 20% as test set/unseen data</span></span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>X_train,X_test,y_train,y_test<span class="op">=</span>train_test_split(X,y,test_size<span class="op">=</span><span class="fl">0.2</span>,random_state<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Robust scaling due to extreme outliers</span></span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>scaler <span class="op">=</span> RobustScaler()</span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>X_train_scaled <span class="op">=</span> scaler.fit_transform(X_train)</span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>X_test_scaled <span class="op">=</span> scaler.transform(X_test)</span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Looping 3 linear model for comparison</span></span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>models<span class="op">=</span> {<span class="st">"Linear Regression"</span>: LinearRegression(),</span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>         <span class="st">"Ridge Regression"</span>: Ridge(random_state<span class="op">=</span><span class="dv">42</span>),</span>
-<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>         <span class="st">"XGBRegressor"</span>: XGBRegressor(random_state<span class="op">=</span><span class="dv">42</span>,objective<span class="op">=</span><span class="st">"reg:squarederror"</span>,n_estimators<span class="op">=</span><span class="dv">100</span>)}</span>
-<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name,model <span class="kw">in</span> models.items():</span>
-<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>    model.fit(X_train_scaled,y_train)</span>
-<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>    y_pred<span class="op">=</span>model.predict(X_test_scaled)</span>
-<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>    rmse<span class="op">=</span> root_mean_squared_error(y_test,y_pred)</span>
-<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>    r2<span class="op">=</span>r2_score(y_test,y_pred)</span>
-<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Model: </span><span class="sc">{</span>name<span class="sc">}</span><span class="ch">\n</span><span class="ss">RMSE: </span><span class="sc">{</span>rmse<span class="sc">:.2f}</span><span class="ss"> R2: </span><span class="sc">{</span>r2<span class="sc">:.2f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Feature selection</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>X<span class="op">=</span>train_clean.drop([<span class="st">'key'</span>,<span class="st">'fare_amount'</span>,<span class="st">'pickup_datetime'</span>],axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Target selection</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>y<span class="op">=</span>train_clean[<span class="st">"fare_amount"</span>]</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 20% as test set/unseen data</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>X_train,X_test,y_train,y_test<span class="op">=</span>train_test_split(X,y,test_size<span class="op">=</span><span class="fl">0.2</span>,random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Looping 3 linear model for comparison</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>models<span class="op">=</span> {<span class="st">"Linear Regression"</span>: LinearRegression(),</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>         <span class="st">"Ridge Regression"</span>: Ridge(random_state<span class="op">=</span><span class="dv">42</span>,alpha<span class="op">=</span><span class="dv">10</span>), <span class="co"># L2 penalty to co-efficients</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>         <span class="st">"XGBRegressor"</span>: XGBRegressor(random_state<span class="op">=</span><span class="dv">42</span>,objective<span class="op">=</span><span class="st">"reg:squarederror"</span>,</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>                                      n_estimators<span class="op">=</span><span class="dv">100</span>)} <span class="co"># Number of trees</span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name,model <span class="kw">in</span> models.items():</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>    model.fit(X_train,y_train)</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>    y_pred<span class="op">=</span>model.predict(X_test)</span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>    rmse<span class="op">=</span> root_mean_squared_error(y_test,y_pred)</span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>    R2<span class="op">=</span>r2_score(y_test,y_pred)</span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Model: </span><span class="sc">{</span>name<span class="sc">}</span><span class="ch">\n</span><span class="ss">RMSE: </span><span class="sc">{</span>rmse<span class="sc">:.2f}</span><span class="ss"> R2: </span><span class="sc">{</span>R2<span class="sc">:.2f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Model: Linear Regression
-RMSE: 4.28 R2: 0.78
+RMSE: 4.23 R2: 0.79
 Model: Ridge Regression
-RMSE: 4.28 R2: 0.78
+RMSE: 4.23 R2: 0.79
 Model: XGBRegressor
-RMSE: 3.50 R2: 0.86</code></pre>
+RMSE: 3.43 R2: 0.87</code></pre>
 </div>
 </div>
 <ul>
-<li>A robust machine learning pipeline was implemented, beginning with an 80/20 train-test split. To mitigate the impact of outliers in the NYC taxi dataset, a RobustScaler was applied. Out of three Baseline model XGBRegressor has lowest RMSE and highest R2.</li>
+<li>An 80/20 splits are used. XGBoost has lower RMSE and higher R2 than the both linear models even after adding penalty. The fare has non-linear relationship with features so tree based models are better suited to capture these patterns. &nbsp;</li>
 </ul>
 </section>
 </section>
-<section id="hyperparemeter-tuninng-with-k-fold-cross-validation-for-best-baseline-model" class="level2">
-<h2 class="anchored" data-anchor-id="hyperparemeter-tuninng-with-k-fold-cross-validation-for-best-baseline-model">Hyperparemeter tuninng with K-Fold cross validation for best baseline model</h2>
-<div id="99dd9567-3d81-42d8-93d8-70166c3b0c3f" class="cell" data-scrolled="true" data-execution_count="19">
+<section id="hyperparemeter-tuninng-with-k-fold-cross-validation" class="level2">
+<h2 class="anchored" data-anchor-id="hyperparemeter-tuninng-with-k-fold-cross-validation">Hyperparemeter tuninng with K-Fold cross validation</h2>
+<div id="99dd9567-3d81-42d8-93d8-70166c3b0c3f" class="cell" data-scrolled="true" data-execution_count="18">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Cross validation with 5 split for robustness and to reduce biasness</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>kfold<span class="op">=</span>KFold(n_splits<span class="op">=</span><span class="dv">5</span>,shuffle<span class="op">=</span><span class="va">True</span>,random_state<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. hyperparameter tuning of Ridge regression parameters: alpha and solver to penalize large co-efficients</span></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>xgb<span class="op">=</span>XGBRegressor(random_state<span class="op">=</span><span class="dv">42</span>,objective<span class="op">=</span><span class="st">"reg:squarederror"</span>) <span class="co"># fixed seed for reproducibility</span></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>param_gid<span class="op">=</span>{<span class="st">"n_estimators"</span>:[<span class="dv">200</span>,<span class="dv">300</span>],<span class="st">"max_depth"</span>:[<span class="dv">3</span>,<span class="dv">5</span>],<span class="st">"learning_rate"</span>:[<span class="fl">0.01</span>,<span class="fl">0.1</span>]} <span class="co">#lsqr for faster iteration and saga for gradient decent</span></span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Randomized Seach of all 8 parameter combinations across 5 splits (total 40 fits)</span></span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>xgb_gridcv<span class="op">=</span>RandomizedSearchCV(xgb,param_gid,cv<span class="op">=</span>kfold,n_iter<span class="op">=</span><span class="dv">8</span>)</span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Fitting and predicting using the best estimator and parameters</span></span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>xgb_gridcv.fit(X_train_scaled,y_train)</span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>y_pred<span class="op">=</span>xgb_gridcv.predict(X_test_scaled)</span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. Results</span></span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>rmse <span class="op">=</span> root_mean_squared_error(y_test, y_pred)</span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Tuned Parameters for the best estimator:</span><span class="sc">{</span>xgb_gridcv<span class="sc">.</span>best_params_<span class="sc">}</span><span class="ch">\n</span><span class="ss">Mean Score of the best estimator:</span><span class="sc">{</span>xgb_gridcv<span class="sc">.</span>best_score_<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Local Validation RMSE: </span><span class="sc">{</span>rmse<span class="sc">:.2f}</span><span class="ch">\n</span><span class="ss">R2 Score: </span><span class="sc">{</span>xgb_gridcv<span class="sc">.</span>score(X_test_scaled,y_test)<span class="sc">:.2f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Cross validation with 5 split for robustness and to reduce biasness</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>kfold<span class="op">=</span>KFold(n_splits<span class="op">=</span><span class="dv">5</span>,shuffle<span class="op">=</span><span class="va">True</span>,random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. hyperparameter tuning of XGBoost regression parameters</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>xgb<span class="op">=</span>XGBRegressor(random_state<span class="op">=</span><span class="dv">42</span>,objective<span class="op">=</span><span class="st">"reg:squarederror"</span>) <span class="co"># fixed seed for reproducibility</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>param_gid<span class="op">=</span>{<span class="st">"n_estimators"</span>:[<span class="dv">200</span>,<span class="dv">400</span>,<span class="dv">600</span>], <span class="co">#Number of trees</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>           <span class="st">"max_depth"</span>:[<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>], <span class="co"># Maximum depth in each tree</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>           <span class="st">"learning_rate"</span>:[<span class="fl">0.01</span>,<span class="fl">0.1</span>,<span class="fl">0.2</span>], <span class="co"># Step size</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>           <span class="st">"subsample"</span>:[<span class="fl">0.7</span>,<span class="fl">0.8</span>,<span class="fl">0.9</span>], <span class="co"># Fraction of traing data used per tree</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>           <span class="st">"colsample_bytree"</span>:[<span class="fl">0.7</span>,<span class="fl">0.8</span>,<span class="fl">0.9</span>] <span class="co"># Fraction of feature used per tree</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>           } </span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Randomized Seach of all 64 parameter combinations across 5 splits with 10 iterrations</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>xgb_gridcv<span class="op">=</span>RandomizedSearchCV(xgb,param_gid,cv<span class="op">=</span>kfold,n_iter<span class="op">=</span><span class="dv">20</span>,random_state<span class="op">=</span><span class="dv">42</span>,</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>                              scoring<span class="op">=</span><span class="st">"neg_root_mean_squared_error"</span>)</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Fitting and predicting using the best estimator and parameters</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>xgb_gridcv.fit(X_train,y_train)</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>y_pred<span class="op">=</span>xgb_gridcv.predict(X_test)</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. Results</span></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>rmse <span class="op">=</span> root_mean_squared_error(y_test, y_pred)</span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>R2 <span class="op">=</span> r2_score(y_test,y_pred)</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>cv_rmse <span class="op">=</span> <span class="op">-</span>xgb_gridcv.best_score_</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Tuned Parameters for the best estimator:</span><span class="sc">{</span>xgb_gridcv<span class="sc">.</span>best_params_<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Cross Validations RMSE: </span><span class="sc">{</span>cv_rmse<span class="sc">:.2f}</span><span class="ch">\n</span><span class="ss">Test RMSE: </span><span class="sc">{</span>rmse<span class="sc">:.2f}</span><span class="ch">\n</span><span class="ss">R2 Score: </span><span class="sc">{</span>R2<span class="sc">:.2f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Tuned Parameters for the best estimator:{'n_estimators': 300, 'max_depth': 5, 'learning_rate': 0.1}
-Mean Score of the best estimator:0.8510895091453824
-Local Validation RMSE: 3.51
-R2 Score: 0.85</code></pre>
+<pre><code>Tuned Parameters for the best estimator:{'subsample': 0.9, 'n_estimators': 600, 'max_depth': 5, 'learning_rate': 0.1, 'colsample_bytree': 0.9}
+Cross Validations RMSE: 3.38
+Test RMSE: 3.42
+R2 Score: 0.87</code></pre>
 </div>
 </div>
 <ul>
-<li>Model hyperparameters are optimized using a Randomized Search with 5-fold Cross-Validation for total 40 model fits of selected 8 parameters combinations to a single training instance to ensure no overfittings.</li>
-<li>The RMSE of 3.59 means on average predictions are off by $3.59.</li>
-<li>R2 Score of 0.85 means, the seleted features explain 85% of the variance in the fare amount.</li>
+<li>The model generalizes well with minimal overfitting as the diffence between Cross Validations RMSE and Test RMSE is only 0.04.</li>
 </ul>
 <section id="feature-importance" class="level3">
 <h3 class="anchored" data-anchor-id="feature-importance">Feature Importance</h3>
-<div id="30bfd75d-53bd-40ed-bb41-7385d958a458" class="cell" data-execution_count="20">
+<div id="30bfd75d-53bd-40ed-bb41-7385d958a458" class="cell" data-execution_count="64">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({<span class="st">"Feature"</span>:X.columns,<span class="st">"Importance"</span>:xgb_gridcv.best_estimator_.feature_importances_}).sort_values(by<span class="op">=</span><span class="st">"Importance"</span>)<span class="op">\</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    .plot.barh(<span class="st">"Feature"</span>,<span class="st">"Importance"</span>)</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Feature Importance: XGBRegressor"</span>)</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>ax<span class="op">=</span>pd.DataFrame({<span class="st">"Feature"</span>:X.columns,<span class="st">"Importance"</span>:xgb_gridcv.<span class="op">\</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    best_estimator_.feature_importances_}).</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    sort_values(by<span class="op">=</span><span class="st">"Importance"</span>,ascending<span class="op">=</span><span class="va">False</span>).plot.barh(<span class="st">"Feature"</span>,<span class="st">"Importance"</span>)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Feature Importances for NYC Taxi Fare Prediction Model</span><span class="ch">\n</span><span class="st">Model: XGBoost Regressor| RMSE: $3.38 | R²: 0.87"</span>)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Importance Score"</span>)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="nyc-taxi-fare-prediction_files/figure-html/cell-20-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>The model feature importance indicates that the distance is the most dominant factor in fare prediction, along with airport trips as the secondary driver.</li>
+<li>Other temporal features such as time, year and passenger has less importance.</li>
+<li>These concluse that fare is largely determined by spatial and pricing rules than temporal patterns.</li>
+</ul>
+<div id="94d62340-0dfb-4eff-9e57-f67ba1b16bc6" class="cell" data-execution_count="54">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(x<span class="op">=</span>X_test[<span class="st">"distance_km"</span>],y<span class="op">=</span>y_test,label<span class="op">=</span><span class="st">"Actual"</span>,alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(x<span class="op">=</span>X_test[<span class="st">"distance_km"</span>],y<span class="op">=</span>y_pred,label<span class="op">=</span><span class="st">"Predicted"</span>,color<span class="op">=</span><span class="st">"darkred"</span>,alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Distance (km)"</span>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Fare Amount ($)"</span>)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Actual vs Predicted Taxi Fares by Distance"</span>)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
@@ -554,44 +574,29 @@ R2 Score: 0.85</code></pre>
 </div>
 </div>
 </div>
-<div id="94d62340-0dfb-4eff-9e57-f67ba1b16bc6" class="cell" data-execution_count="21">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(x<span class="op">=</span>X_test[<span class="st">"distance_km"</span>],y<span class="op">=</span>y_test,label<span class="op">=</span><span class="st">"Actual"</span>)</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(x<span class="op">=</span>X_test[<span class="st">"distance_km"</span>],y<span class="op">=</span>y_pred,label<span class="op">=</span><span class="st">"Prediction"</span>,color<span class="op">=</span><span class="st">"darkred"</span>)</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"NYC Taxi Fares: Actual vs Predicted by Distance"</span>)</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Distance (km)"</span>)</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Fare Amount ($)"</span>)</span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="nyc-taxi-fare-prediction_files/figure-html/cell-22-output-1.png" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
 <ul>
-<li>The scatter plot shows the XGBoost model captures the some non-linear relationship between distance and fare, while fail to captute noise like base base fare, short distance. Need more location based features.</li>
+<li>The scatter plot shows the XGBoost model captures oveall relationship between distance and fare, while fail to captute noise like base base fare, short distance.</li>
 </ul>
 </section>
 </section>
 <section id="kaggle-submission" class="level2">
 <h2 class="anchored" data-anchor-id="kaggle-submission">Kaggle Submission</h2>
-<div id="c2db43ce-fe3a-4341-a8c6-fd5f50aa2c87" class="cell" data-execution_count="24">
+<div id="c2db43ce-fe3a-4341-a8c6-fd5f50aa2c87" class="cell" data-execution_count="65">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>test<span class="op">=</span>date_transform(test)</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>test<span class="op">=</span>haversign_distance(test)</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>X_scaled<span class="op">=</span> scaler.fit_transform(X)</span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>xgb_gridcv.fit(X_scaled,y<span class="op">=</span>train_clean[<span class="st">"fare_amount"</span>])</span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>test_features <span class="op">=</span> test[[<span class="st">"distance_km"</span>,<span class="st">"dropoff_longitude"</span>,<span class="st">"pickup_longitude"</span>,<span class="st">"day_of_week"</span><span class="op">\</span></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>               ,<span class="st">"passenger_count"</span>,<span class="st">"year"</span>,<span class="st">"hour"</span>]]</span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>test_features_scaled<span class="op">=</span>scaler.transform(test_features)</span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>test[<span class="st">"fare_amount"</span>] <span class="op">=</span> xgb_gridcv.predict(test_features_scaled)</span>
-<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>test[[<span class="st">"key"</span>,<span class="st">"fare_amount"</span>]].to_csv(<span class="st">'submission.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Final Submission Generated!"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Applying same transformation on test except # missing_outliers and # coordinate_outlier that reduce rows</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 1.Tranformation</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>test<span class="op">=</span>date_transform(test) <span class="co"># For date transformation</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>test<span class="op">=</span>airportbound(test) <span class="co"># For creating 'is_airport' column</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>test<span class="op">=</span>haversign_distance(test) <span class="co"># For creating 'distance_km' column</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Refitting with Gridsearch best estimator</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>xgb_gridcv.fit(X, y)</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="co">#3. Alignment</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>test_final <span class="op">=</span> test[X.columns]</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a><span class="co">#4. Predict</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>test[<span class="st">"fare_amount"</span>] <span class="op">=</span> xgb_gridcv.predict(test_final) </span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>test[[<span class="st">"key"</span>,<span class="st">"fare_amount"</span>]].to_csv(<span class="st">'submission.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Final Submission Generated!"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Final Submission Generated!</code></pre>
