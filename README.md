@@ -1,63 +1,48 @@
-# New York City Taxi Fare Prediction
+## NYC Taxi Fare Prediction
 
 ## Project Overview
-This project predicts taxi fares in New York City using trip-level location, passenger, and timestamp data.
+Predicts NYC taxi fares using trip data (location, passengers, time). End-to-end ML pipeline from data cleaning to model prediction.
 
 ## Dataset
-Source: Kaggle New York City Taxi Fare Prediction Competition
+- **Source**: Kaggle NYC Taxi Fare Competition  
+- **Size**: ~1M training + 500K test samples  
+- **Download**: kaggle competitions download -c new-york-city-taxi-fare-prediction  
 
-**Dataset not included in this repository due to file size limitations.**
-
-Download via Kaggle API:
-
-```bash
-kaggle competitions download -c new-york-city-taxi-fare-prediction
-```
-
-Competition Link: https://www.kaggle.com/competitions/new-york-city-taxi-fare-prediction
-
-## Tools Used
-- Python
-- Pandas
-- NumPy
-- Scikit-learn
-- XGBoost
-- Matplotlib / Seaborn
-
-## How to Run
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/aguchhait-stack/nyc-taxi-fare-prediction.git
-```
-
-2. Navigate into the project folder:
-
-```bash
-cd nyc-taxi-fare-prediction
-```
-
-3. Download the dataset via Kaggle API:
-
-```bash
-kaggle competitions download -c new-york-city-taxi-fare-prediction
-```
-
-4. Extract the dataset into the project directory.
-
-5. Open the notebook:
-
-```bash
-jupyter notebook nyc-taxi-fare-prediction.ipynb
-```
+## Tools
+- Python, Pandas, NumPy  
+- Scikit-learn, XGBoost  
+- Matplotlib, Seaborn  
 
 ## Workflow
-1. Data Cleaning  
-2. Exploratory Data Analysis  
-3. Feature Engineering  
-4. Model Training  
-5. Evaluation  
+
+### 1. Data Cleaning
+- Removed invalid fares (negative or zero values)  
+- Filtered unrealistic passenger counts (1–6)  
+- Removed coordinate outliers (e.g., (0,0) and outside NYC bounds)  
+
+### 2. Feature Engineering
+- `distance_km` using Haversine formula  
+- `is_airport` flag (JFK, LGA, EWR)  
+- Temporal features (hour, day_of_week, year)  
+
+### 3. Modeling
+- Compared Linear Regression, Ridge, and XGBoost  
+- **XGBoost** performed best after tuning with RandomizedSearchCV  
+
+## Results
+
+- **Linear Regression** → RMSE: 4.23 | R²: 0.79  
+- **Ridge Regression** → RMSE: 4.21 | R²: 0.80  
+- **XGBoost (Tuned)** → RMSE: 3.42 | R²: 0.87  
+
+## Key Insights
+- Distance is the strongest predictor of fare  
+- Airport trips introduce premium pricing effects  
+- Temporal features have minimal direct impact  
 
 ## Status
-🚧 In Progress
+Completed (End-to-End ML Pipeline)
+
+## Future Work
+- Explore neural network models for capturing more complex patterns.
+
