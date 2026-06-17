@@ -1,6 +1,6 @@
-from src.load import load_csv
+from src.load import ingest_bronze
 
 if __name__ == "__main__":
 
-    df_raw = load_csv()
+    ingest_bronze()
     print("🎉 Pipeline executed successfully!")

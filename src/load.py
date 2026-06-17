@@ -1,22 +1,31 @@
 import pandas as pd
-import os
-import logging
+from sqlalchemy import create_engine,text
 
-logging.basicConfig(level=logging.INFO, 
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+engine = create_engine('postgresql://postgres@localhost:5432/nyc_taxi_fare_prediction')
 
-def load_csv(filepath:str ='data.nosync/train.zip',nrows:int=10) -> pd.DataFrame: 
-    
-    if not os.path.exists(filepath):
-        raise FileNotFoundError (f"file not found at {filepath}")
-                                 
-    df = pd.read_csv(filepath,nrows=nrows)
+def ingest_bronze():
+    try:
 
-    logger.info(f"Successfully loaded {len(df)} rows")
+        with engine.connect() as conn:
+            conn.execute(text("CREATE SCHEMA IF NOT EXISTS bronze"))
+            conn.execute(text("DROP TABLE IF EXISTS bronze.taxi_trips"))
+            conn.commit()
+        years_months = [("2026","04"),("2026","03")]
+        for year,month in years_months:
 
-    return df
+            print(f"Fetching {year}-{month} data")
+            base_url = f"https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_{year}-{month}.parquet"
 
+            df = pd.read_parquet(base_url)
+            df = df.sample(100000,random_state=42)
+                
+            df.to_sql(name="taxi_trips",if_exists= "append",schema="bronze",
+                      index=False,chunksize=10000,method="multi",con=engine)
 
-        
-    
+            print(f"Loaded {year}-{month} data to database")
+
+    except Exception as e:
+        print(f"Ingesting error: {e}")
+
+if __name__ == "__main__":
+    ingest_bronze()
