@@ -1,5 +1,15 @@
+# macOS system files
 .DS_Store
-.env
+
+# IDE and Jupyter Notebook files
 .ipynb_checkpoints/
-.Rhistory
+*/.ipynb_checkpoints/*
+
+# Local environments and secrets
+.env
 venv/
+.venv/
+env/
+
+# R history artifacts
+.Rhistory

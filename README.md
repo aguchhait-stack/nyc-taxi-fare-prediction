@@ -1,48 +1,81 @@
-## NYC Taxi Fare Prediction
+# 🚕 NYC Taxi Fare Prediction
 
-## Project Overview
-Predicts NYC taxi fares using trip data (location, passengers, time). End-to-end ML pipeline from data cleaning to model prediction.
+End-to-end machine learning project for predicting NYC taxi fares using XGBoost and Random Forest.
 
-## Dataset
-- **Source**: Kaggle NYC Taxi Fare Competition  
-- **Size**: ~1M training + 500K test samples  
-- **Download**: kaggle competitions download -c new-york-city-taxi-fare-prediction  
+---
 
-## Tools
-- Python, Pandas, NumPy  
-- Scikit-learn, XGBoost  
-- Matplotlib, Seaborn  
+## 📊 Project Highlights & Metrics
 
-## Workflow
+- **Baseline Model**: Mean `fare_amount` from the training set = $11.35
+- **Feature engineering**: Implemented Haversine distance and cyclical time encoding.
+- **Best Model**: XGBoost (Tuned) — Test RMSE: $3.55
+- **Overfitting Gap Reduced**: 1.66 → 0.48 (71% improvement)
 
-### 1. Data Cleaning
-- Removed invalid fares (negative or zero values)  
-- Filtered unrealistic passenger counts (1–6)  
-- Removed coordinate outliers (e.g., (0,0) and outside NYC bounds)  
+## 🎛️ Hyperparameter Optimization Strategy
 
-### 2. Feature Engineering
-- `distance_km` using Haversine formula  
-- `is_airport` flag (JFK, LGA, EWR)  
-- Temporal features (hour, day_of_week, year)  
+* 📉 **Learning Rate (0.05) & Max Depth (4):** Smaller steps and shallower trees to avoid overfitting.
+* 🛡️ **L1 Regularization (0.5):** To shrink uninformative features to improve generalization.
+* 🎲 **Subsampling (Rows: 0.8, Columns: 0.7):** Random row and feature variations to ensure no single outlier dominates the model.
 
-### 3. Modeling
-- Compared Linear Regression, Ridge, and XGBoost  
-- **XGBoost** performed best after tuning with RandomizedSearchCV  
+### Model Performance Evaluation
+![](output/model_comparison.png)
 
-## Results
+---
 
-- **Linear Regression** → RMSE: 4.23 | R²: 0.79  
-- **Ridge Regression** → RMSE: 4.21 | R²: 0.80  
-- **XGBoost (Tuned)** → RMSE: 3.42 | R²: 0.87  
+## 🎨 Visualizations
 
-## Key Insights
-- Distance is the strongest predictor of fare  
-- Airport trips introduce premium pricing effects  
-- Temporal features have minimal direct impact  
+### Locations Analysis
+![](output/location.png)
+> Pickups concentrated in Manhattan · Dropoffs dispersed across all boroughs · JFK strip pattern ($20+ flat-rate) visible at lower right
 
-## Status
-Completed (End-to-End ML Pipeline)
+### Fare Distribution
+![](output/fare_distribution.png)
+> Highly right-skewed (median ~$8.5, max ~$263)
 
-## Future Work
-- Explore neural network models for capturing more complex patterns.
+### Temporal Features vs Fare
+![](output/temoral_feature.png)
+> Cyclic encoding for hour, week and month ensures boundary values are adjacent
+
+### Feature Importance
+![](output/feature_imortance.png)
+> `distance_km` dominates (55%) · Passenger count near-zero (NYC flat-rate per trip, not per passenger)
+
+---
+
+## 📈 Key Findings
+
+- **Distance** is the strongest predictor (validates Haversine feature).
+- **Longitude** captures airport trip variance (East-West corridor trends).
+- **Passenger count** has minimal impact (aligns with NYC flat-rate pricing).
+- **Year** captures fare inflation over time.
+- **Regularisation** reduced overfitting gap 71% ($1.66 → $0.48) with negligible test performance cost
+
+---
+
+
+## 🚀 Quick Start
+
+```bash
+# Clone repository
+git clone https://github.com/aguchhait-stack/nyc-taxi-fare-prediction.git
+cd nyc-taxi-fare-prediction
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Explore notebook
+jupyter notebook nyc-taxi-fare-prediction.ipynb
+```
+
+## 📄 License & Citation
+
+This project uses the [New York City Taxi Fare Prediction](https://kaggle.com/competitions/new-york-city-taxi-fare-prediction) dataset 
+from Kaggle.
+
+---
+
+## 👨‍💻 Author
+
+**Arijit Guchhait**  
+[LinkedIn](https://www.linkedin.com/in/guchhaitarijit/)
 
